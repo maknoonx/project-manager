@@ -1,0 +1,128 @@
+/* projects/static/projects/css/main.css */
+
+/* Common Styles */
+body {
+    font-family: 'Cairo', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* Project List Styles */
+.company-logo {
+    max-height: 30px;
+    max-width: 50px;
+    object-fit: contain;
+}
+
+/* Card & Table Styles */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: 0;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    font-weight: 600;
+}
+
+/* Buttons & Actions */
+.btn {
+    border-radius: 5px;
+    font-weight: 500;
+}
+
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.btn i {
+    margin-left: 5px;
+}
+
+/* Form Styles */
+label {
+    font-weight: 500;
+}
+
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    .card-header .btn {
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    .table-responsive {
+        border: none;
+    }
+    
+    .btn-group {
+        display: flex;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        flex: 1;
+    }
+}
+
+/* RTL Specific Adjustments */
+.btn i {
+    margin-left: 5px;
+    margin-right: 0;
+}
+
+.form-check {
+    padding-right: 1.5em;
+    padding-left: 0;
+}
+
+
+/* projects/static/projects/css/print.css */
+
+@media print {
+    body {
+        background-color: #fff;
+        font-size: 12pt;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-container {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+    }
+    
+    .project-info, .stage-card {
+        page-break-inside: avoid;
+    }
+    
+    @page {
+        size: A4;
+        margin: 2cm;
+    }
+}

@@ -1,0 +1,42 @@
+<!-- projects/templates/projects/project_confirm_delete.html -->
+{% extends 'projects/base.html' %}
+
+{% block title %}حذف المشروع{% endblock %}
+
+{% block content %}
+<div class="card shadow border-danger">
+    <div class="card-header bg-danger text-white">
+        <h3 class="mb-0"><i class="fas fa-exclamation-triangle"></i> تأكيد الحذف</h3>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title text-danger">هل أنت متأكد من حذف المشروع "{{ object.name }}"؟</h5>
+        <p class="card-text">
+            سيتم حذف المشروع وجميع المراحل والمهام المرتبطة به بشكل نهائي. هذه العملية لا يمكن التراجع عنها.
+        </p>
+        
+        <div class="alert alert-warning">
+            <h6><i class="fas fa-info-circle"></i> تفاصيل المشروع:</h6>
+            <ul>
+                <li><strong>اسم المشروع:</strong> {{ object.name }}</li>
+                <li><strong>الشركة المنفذة:</strong> {{ object.company }}</li>
+                <li><strong>تاريخ البدء:</strong> {{ object.start_date }}</li>
+                <li><strong>تاريخ الانتهاء:</strong> {{ object.end_date }}</li>
+                <li><strong>العميل:</strong> {{ object.client }}</li>
+                <li><strong>عدد المراحل:</strong> {{ object.get_stages_count }}</li>
+            </ul>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'projects:project_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> حذف المشروع
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

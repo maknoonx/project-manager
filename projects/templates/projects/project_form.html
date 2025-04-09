@@ -1,0 +1,271 @@
+<!-- projects/templates/projects/project_form.html -->
+{% extends 'projects/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if form.instance.pk %}تعديل مشروع{% else %}إضافة مشروع جديد{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #6699cc;
+    --secondary: #5b5b5b;
+    --dark: #38444f;
+  }
+  
+  /* Stage Card Styles */
+  .stage-card {
+    position: relative;
+    border-right: 4px solid var(--primary);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stage-number {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Task Item Styles */
+  .task-item {
+    border-right: 3px solid var(--secondary);
+    background-color: #f7f7f7;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  /* Form Labels & Inputs */
+  .form-label {
+    font-weight: bold;
+    color: var(--dark);
+  }
+  
+  input.form-control, textarea.form-control {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+  
+  input.form-control:focus, textarea.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 5px rgba(102, 153, 204, 0.5);
+  }
+  
+  /* Card Header Styling for the Form */
+  .card-header {
+    background-color: var(--dark) !important;
+    color: #fff !important;
+  }
+  
+  /* Button Styles */
+  .btn-primary {
+    background-color: var(--primary);
+    border: none;
+  }
+  .btn-primary:hover {
+    background-color: var(--secondary);
+  }
+  
+  .btn-success {
+    background-color: var(--primary);
+    border: none;
+  }
+  .btn-success:hover {
+    background-color: var(--secondary);
+  }
+  
+  .btn-info {
+    background-color: var(--primary);
+    border: none;
+    color: #fff;
+  }
+  .btn-info:hover {
+    background-color: var(--secondary);
+  }
+  
+  .btn-danger {
+    background-color: var(--dark);
+    border: none;
+  }
+  .btn-danger:hover {
+    background-color: var(--secondary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card shadow">
+  <div class="card-header">
+    <h3 class="mb-0">
+      {% if form.instance.pk %}
+        <i class="fas fa-edit"></i> تعديل مشروع: {{ form.instance.name }}
+      {% else %}
+        <i class="fas fa-plus"></i> إضافة مشروع جديد
+      {% endif %}
+    </h3>
+  </div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data" id="project-form">
+      {% csrf_token %}
+      
+      <div class="row">
+        <div class="col-md-6">
+          {{ form.name|as_crispy_field }}
+        </div>
+        <div class="col-md-6">
+          {{ form.client|as_crispy_field }}
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          {{ form.company|as_crispy_field }}
+        </div>
+        <div class="col-md-6">
+          {{ form.company_logo|as_crispy_field }}
+          {% if form.instance.company_logo %}
+          <div class="mb-3">
+            <p>الشعار الحالي:</p>
+            <img src="{{ form.instance.company_logo.url }}" alt="{{ form.instance.company }}" 
+                 class="img-thumbnail" style="max-height: 100px;">
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6">
+          {{ form.start_date|as_crispy_field }}
+        </div>
+        <div class="col-md-6">
+          {{ form.end_date|as_crispy_field }}
+        </div>
+      </div>
+      
+      <h4 class="mt-4 mb-3 border-bottom pb-2">
+        <i class="fas fa-tasks"></i> مراحل المشروع
+        <button type="button" class="btn btn-sm btn-primary float-start" id="add-stage-btn">
+          <i class="fas fa-plus"></i> إضافة مرحلة
+        </button>
+      </h4>
+      
+      <div id="stages-container" class="mb-4">
+        <!-- سيتم تحميل المراحل هنا بواسطة الجافا سكريبت -->
+      </div>
+      
+      <input type="hidden" name="stages_data" id="stages-data-input">
+      
+      <div class="mt-4 d-flex justify-content-between">
+        <a href="{% url 'projects:project_list' %}" class="btn btn-secondary">
+          <i class="fas fa-arrow-right"></i> العودة
+        </a>
+        <div>
+          <button type="submit" class="btn btn-success" name="save">
+            <i class="fas fa-save"></i> حفظ
+          </button>
+
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Stage Template -->
+<template id="stage-template">
+  <div class="card stage-card">
+    <div class="stage-number">1</div>
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">المرحلة: <span class="stage-name">إسم المرحلة</span></h5>
+      <div>
+        <button type="button" class="btn btn-sm btn-info add-task-btn">
+          <i class="fas fa-plus"></i> إضافة مهمة
+        </button>
+        <button type="button" class="btn btn-sm btn-danger remove-stage-btn">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">إسم المرحلة</label>
+          <input type="text" class="form-control stage-name-input" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">رقم المرحلة</label>
+          <input type="number" class="form-control stage-number-input" min="1" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">المشرف</label>
+          <input type="text" class="form-control stage-supervisor-input" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">المستلم</label>
+          <input type="text" class="form-control stage-recipient-input" required>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">تاريخ البدء</label>
+          <input type="date" class="form-control stage-start-date-input" required>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">تاريخ الإستلام</label>
+          <input type="date" class="form-control stage-end-date-input" required>
+        </div>
+      </div>
+      
+      <h6 class="mt-3 mb-2 border-bottom pb-2">
+        <i class="fas fa-list-check"></i> المهام
+      </h6>
+      
+      <div class="tasks-container">
+        <!-- سيتم تحميل المهام هنا بواسطة الجافا سكريبت -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Task Template -->
+<template id="task-template">
+  <div class="task-item">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0">المهمة: <span class="task-name">إسم المهمة</span></h6>
+      <button type="button" class="btn btn-sm btn-danger remove-task-btn">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+    <div class="row">
+      <div class="col-12 mb-2">
+        <label class="form-label">إسم المهمة</label>
+        <input type="text" class="form-control task-name-input" required>
+      </div>
+      <div class="col-12">
+        <label class="form-label">وصف المهمة</label>
+        <textarea class="form-control task-description-input" rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'projects/js/project_form.js' %}"></script>
+{% endblock %}

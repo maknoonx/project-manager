@@ -1,0 +1,76 @@
+<!-- projects/templates/projects/project_list.html -->
+{% extends 'projects/base.html' %}
+{% load static %}
+
+{% block title %}قائمة المشاريع{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h3 class="mb-0">قائمة المشاريع</h3>
+    <a href="{% url 'projects:project_add' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> إضافة مشروع جديد
+    </a>
+  </div>
+  <div class="card-body">
+    {% if projects %}
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead>
+          <tr>
+            <th>اسم المشروع</th>
+            <th>الشركة المنفذة</th>
+            <th>تاريخ البدء</th>
+            <th>تاريخ الانتهاء</th>
+            <th>عدد المراحل</th>
+            <th>العميل</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for project in projects %}
+          <tr>
+            <td>{{ project.name }}</td>
+            <td>
+              {{ project.company }}
+              {% if project.company_logo %}
+              <img src="{{ project.company_logo.url }}" alt="{{ project.company }}" class="company-logo ms-2">
+              {% endif %}
+            </td>
+            <td>{{ project.start_date }}</td>
+            <td>{{ project.end_date }}</td>
+            <td>{{ project.get_stages_count }}</td>
+            <td>{{ project.client }}</td>
+            <td>
+              <div class="btn-group" role="group">
+                <a href="{% url 'projects:project_print' project.pk %}" class="btn btn-success" title="طباعة">
+                  <i class="fas fa-print"></i>
+                </a>
+                <a href="{% url 'projects:project_delete' project.pk %}" class="btn btn-danger delete-project" 
+                   data-project-name="{{ project.name }}" title="حذف">
+                  <i class="fas fa-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+      <i class="fas fa-info-circle fa-2x mb-3"></i>
+      <h4>لا توجد مشاريع</h4>
+      <p>لم يتم إضافة أي مشاريع بعد. يمكنك إضافة مشروع جديد بالنقر على زر "إضافة مشروع جديد".</p>
+      <a href="{% url 'projects:project_add' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> إضافة مشروع جديد
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'projects/js/confirm_delete.js' %}"></script>
+{% endblock %}

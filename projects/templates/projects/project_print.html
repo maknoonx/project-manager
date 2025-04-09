@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>طباعة المشروع: {{ project.name }}</title>
+  
+  <!-- Bootstrap RTL -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ------------------------- Print-Specific Styles ------------------------- */
+    @media print {
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+      /* Avoid page breaks within stage cards */
+      .stage-card {
+        page-break-inside: avoid;
+      }
+    }
+
+    /* ------------------------- Global Styles ------------------------- */
+    body {
+      font-family: 'Cairo', Arial, sans-serif;
+      background-color: #fff;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* Container mimics an A4 document with internal padding and a subtle border */
+    .print-container {
+      max-width: 190mm; /* a bit less than A4 width */
+      margin: 0 auto;
+      padding: 10mm;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    
+    /* ------------------------- Header Styles ------------------------- */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid #007bff;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 1.8em;
+      color: #007bff;
+    }
+    
+    .header p {
+      margin: 0;
+      font-size: 1em;
+      color: #333;
+    }
+    
+    .company-logo img {
+      max-height: 80px;
+      max-width: 200px;
+    }
+    
+    /* ------------------------- Project Info ------------------------- */
+    .project-info {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    
+    .project-info p {
+      margin: 5px 0;
+      font-size: 1em;
+    }
+    
+    .project-info strong {
+      color: #007bff;
+    }
+    
+    /* ------------------------- Project Stages ------------------------- */
+    .project-stages h2 {
+      margin-bottom: 20px;
+      color: #007bff;
+      font-size: 1.4em;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    
+    .stage-card {
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-left: 5px solid #007bff;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    
+    .stage-card header {
+      background-color: #f0f0f0;
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .stage-card header h3 {
+      margin: 0;
+      font-size: 1.2em;
+      color: #007bff;
+    }
+    
+    .stage-body {
+      padding: 15px;
+    }
+    
+    .stage-info {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    
+    .stage-info .info-item {
+      flex: 1 1 50%;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+    }
+    
+    .stage-info .info-item strong {
+      color: #007bff;
+    }
+    
+    .task-section h4 {
+      margin-bottom: 10px;
+      color: #007bff;
+      font-size: 1em;
+    }
+    
+    .task-item {
+      background-color: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-left: 3px solid #6c757d;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+    }
+    
+    .task-item h5 {
+      margin: 0 0 5px 0;
+      font-size: 1em;
+      color: #6c757d;
+    }
+    
+    /* ------------------------- Signature Section ------------------------- */
+    .signature-section {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #ddd;
+    }
+    
+    .signature-section .signature-box {
+      width: 45%;
+      text-align: center;
+      font-size: 1em;
+    }
+    
+    .signature-box .signature-line {
+      border-bottom: 2px solid #007bff;
+      height: 50px;
+      margin-bottom: 10px;
+    }
+    
+    /* ------------------------- Footer ------------------------- */
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.8rem;
+      color: #6c757d;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="print-container">
+    <!-- Navigation for non-print views -->
+    <div class="no-print mb-3 d-flex justify-content-between">
+      <a href="{% url 'projects:project_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-right"></i> العودة
+      </a>
+      <button onclick="window.print()" class="btn btn-primary">
+        <i class="fas fa-print"></i> طباعة
+      </button>
+    </div>
+    
+    <!-- Header Section -->
+    <div class="header">
+      <div>
+        <h1>{{ project.name }}</h1>
+        <p>تقرير حالة المشروع</p>
+      </div>
+      {% if project.company_logo %}
+      <div class="company-logo">
+        <img src="{{ project.company_logo.url }}" alt="{{ project.company }}">
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Project Information -->
+    <div class="project-info">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>اسم المشروع:</strong> {{ project.name }}</p>
+          <p><strong>الشركة المنفذة:</strong> {{ project.company }}</p>
+          <p><strong>العميل:</strong> {{ project.client }}</p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>تاريخ البدء:</strong> {{ project.start_date }}</p>
+          <p><strong>تاريخ الانتهاء:</strong> {{ project.end_date }}</p>
+          <p><strong>عدد المراحل:</strong> {{ project.get_stages_count }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Project Stages -->
+    <div class="project-stages">
+      <h2>مراحل المشروع</h2>
+      
+      {% for stage in project.stages.all %}
+      <article class="stage-card">
+        <header>
+          <h3>المرحلة {{ stage.number }}: {{ stage.name }}</h3>
+        </header>
+        <div class="stage-body">
+          <div class="stage-info">
+            <div class="info-item">
+              <p><strong>المشرف:</strong> {{ stage.supervisor }}</p>
+            </div>
+            <div class="info-item">
+              <p><strong>المستلم:</strong> {{ stage.recipient }}</p>
+            </div>
+            <div class="info-item">
+              <p><strong>تاريخ البدء:</strong> {{ stage.start_date }}</p>
+            </div>
+            <div class="info-item">
+              <p><strong>تاريخ الاستلام:</strong> {{ stage.end_date }}</p>
+            </div>
+          </div>
+          
+          {% if stage.tasks.exists %}
+          <div class="task-section">
+            <h4>المهام:</h4>
+            {% for task in stage.tasks.all %}
+            <div class="task-item">
+              <h5>{{ task.name }}</h5>
+              {% if task.description %}
+              <p>{{ task.description }}</p>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </article>
+      {% empty %}
+      <div class="alert alert-info">
+        لا توجد مراحل لهذا المشروع بعد.
+      </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Signature Section -->
+    <div class="signature-section">
+      <div class="signature-box">
+        <div class="signature-line"></div>
+        <p><strong>توقيع المشرف</strong></p>
+      </div>
+      <div class="signature-box">
+        <div class="signature-line"></div>
+        <p><strong>توقيع المستلم</strong></p>
+      </div>
+    </div>
+    
+
+  </div>
+  
+  <script>
+    // Automatically trigger the print dialog if in print mode
+    {% if print_mode %}
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          window.print();
+        }, 500);
+      });
+    {% endif %}
+  </script>
+</body>
+</html>
