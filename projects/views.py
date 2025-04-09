@@ -17,7 +17,6 @@ from .forms import ProjectForm, StageForm, TaskForm
 
 import tempfile
 from django.template.loader import render_to_string
-from weasyprint import HTML
 from django.conf import settings
 import os
 
