@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-your-secret-key-here'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -67,7 +67,7 @@ WSGI_APPLICATION = 'project_manager.wsgi.application'
 
 # Database - using PostgreSQL for Railway
 DATABASES = {
-    'default': dj_database_url.parse('postgresql://postgres:lcKRplEEGwPEpddpWrgApBFHilugqAKE@turntable.proxy.rlwy.net:25903/railway')
+    'default': dj_database_url.parse('postgresql://postgres:fgJXhUSMaUUJyPAPlKNzgkjCPMtSWCQu@ballast.proxy.rlwy.net:45656/railway')
 }
 
 # Password validation

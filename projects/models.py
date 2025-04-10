@@ -5,10 +5,24 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 
+class Company(models.Model):
+    name = models.CharField(_("اسم الشركة"), max_length=200, blank=True, null=True)
+    logo = models.ImageField(_("شعار الشركة"), upload_to="company_logos/", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("شركة")
+        verbose_name_plural = _("الشركات")
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 class Project(models.Model):
-    name = models.CharField(_("اسم المشروع"), max_length=200)
-    company = models.CharField(_("الشركة المنفذة"), max_length=200, blank=True, null=True )
-    company_logo = models.ImageField(_("شعار الشركة"), upload_to="company_logos/", blank=True, null=True)
+    name = models.CharField(_("اسم المشروع"), max_length=200, blank=True, null=True)
+    company = models.ForeignKey(Company, verbose_name=_("الشركة المنفذة"), on_delete=models.SET_NULL, blank=True, null=True, related_name="projects")
     start_date = models.DateField(_("تاريخ البدء"), blank=True, null=True)
     end_date = models.DateField(_("تاريخ الانتهاء"), blank=True, null=True)
     client = models.CharField(_("العميل"), max_length=200, blank=True, null=True)
@@ -25,9 +39,6 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return reverse("projects:project_detail", kwargs={"pk": self.pk})
-    
-    def get_stages_count(self):
-        return self.stages.count()
 
 
 class Stage(models.Model):
@@ -55,8 +66,8 @@ class Task(models.Model):
     stage = models.ForeignKey(Stage, related_name="tasks", on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(_("اسم المهمة"), max_length=200, blank=True, null=True)
     description = models.TextField(_("وصف المهمة"), blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     class Meta:
         verbose_name = _("مهمة")
